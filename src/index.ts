@@ -1,13 +1,13 @@
+import { redisClient } from "./lib/redis";
 import express from "express";
-import Redis from "ioredis";
 import mongoose from "mongoose";
+import siteBannerRouter from "./modules/site-banner/route";
 
 const app = express();
-
-const redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
+app.use(express.json());
 
 app.get("/redis", async (req, res) => {
-  const reply = await redis.ping();
+  const reply = await redisClient.ping();
   res.status(200).json({ redis: reply });
 });
 
@@ -28,6 +28,8 @@ app.get("/mongo", async (req, res) => {
     }
   }
 });
+
+app.use(siteBannerRouter);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
